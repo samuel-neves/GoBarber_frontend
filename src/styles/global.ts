@@ -8,10 +8,18 @@ export default createGlobalStyle`
     outline: 0;
 
     body {
-      overflow: hidden;
       background: #312E38;
       color: #FFF;
       -webkit-font-smoothing: antialiased;
+
+      &::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+      }
+
+      & {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
     }
 
     body, input, button {
