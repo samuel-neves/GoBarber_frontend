@@ -2,9 +2,11 @@ import React, { useCallback, useRef } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
-
 import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
-import { useAuth } from '../../hooks/AuthContext';
+
+import { useToast } from '../../hooks/toast';
+import { useAuth } from '../../hooks/auth';
+
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import logoImg from '../../assets/logo.svg';
@@ -22,6 +24,7 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
   const { signIn } = useAuth();
+  const { addToast } = useToast();
 
   const handleSubmit = useCallback(
     async (data: SignInFormData) => {
@@ -32,14 +35,14 @@ const SignIn: React.FC = () => {
           email: Yup.string()
             .required('E-mail obrigatório')
             .email('Digite um e-mail válido'),
-          password: Yup.string().min(6, 'Tamanho mínimo de 6 digitos'),
+          password: Yup.string().required('Senha obrigatória'),
         });
 
         await schema.validate(data, {
           abortEarly: false,
         });
 
-        signIn({
+        await signIn({
           email: data.email,
           password: data.password,
         });
@@ -50,10 +53,14 @@ const SignIn: React.FC = () => {
           formRef.current?.setErrors(errors);
         }
 
-        // mensagem de toast
+        addToast({
+          type: 'error',
+          title: 'Erro na autenticação',
+          description: 'Ocorreu um erro ao fazer login, cheque as credenciais!',
+        });
       }
     },
-    [signIn],
+    [signIn, addToast],
   );
 
   return (
